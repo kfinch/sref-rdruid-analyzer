@@ -45,6 +45,8 @@ class ParseWorker {
 	buildAndRunAnalyzers() {
 		for(let combatantInfo of this.combatantInfos) {
 			let playerName = this.playerNameMapping.get(combatantInfo.sourceID);
+
+			console.log(playerName + combatantinfo.specID);
 			
 			// each spec has a semi arbitrary ID
 			// see: http://wowwiki.wikia.com/wiki/SpecializationID
