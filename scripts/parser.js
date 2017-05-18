@@ -60,6 +60,11 @@ class ParseWorker {
 				this.analyzers.push(new FeralDruidSubAnalyzer(
 						playerName, combatantInfo, this.fightInfo, this.enemyNameMapping));
 						
+			} else if ( combatantinfo.specID == 264 ) {
+				console.log(playerName + " - Resto Shaman");
+				console.log(combatantinfo);
+				this.analyzers.push(new RestoShamanSubAnalyzer(
+				        playerName, combatantInfo, this.fightInfo, this.enemyNameMapping));
 			} else {
 				// no analysis for you
 			}
