@@ -80,7 +80,7 @@ class RestoShamanSubAnalyzer {
 		let targetId = wclEvent.targetID;
 		let spellId = wclEvent.ability.guid;
 
-		let masteryFactor = masteryRatingPerOne;
+		let masteryFactor = this.masteryRatingPerOne;
 		
 		let maxHealth = wclEvent.maxHitPoints;
 		let amount = wclEvent.amount; // doesn't include overheal
@@ -104,7 +104,7 @@ class RestoShamanSubAnalyzer {
 		
 		if (this.shamanHeals.has(spellId)) { // spell was boosted by mastery
 
-			this.spellHealingMap.get(spellId).mastery += masteryHealAmount;
+			this.spellHealingMap.get(spellId).mastery += masteryMultiplier;
 
 		} else { // spell not boosted by mastery
 			this.totalNoMasteryHealing += amount;

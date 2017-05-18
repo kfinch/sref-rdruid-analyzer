@@ -64,7 +64,7 @@ class ParseWorker {
 						
 			} else if ( combatantInfo.specID == 264 ) {
 				console.log(playerName + " - Resto Shaman");
-				console.log(combatantinfo);
+				console.log(combatantInfo);
 				this.analyzers.push(new RestoShamanSubAnalyzer(
 				        playerName, combatantInfo, this.fightInfo, this.enemyNameMapping));
 			} else {
