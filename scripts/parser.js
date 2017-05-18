@@ -46,7 +46,7 @@ class ParseWorker {
 		for(let combatantInfo of this.combatantInfos) {
 			let playerName = this.playerNameMapping.get(combatantInfo.sourceID);
 
-			console.log(playerName + combatantinfo.specID);
+			console.log(playerName + combatantInfo.specID);
 			
 			// each spec has a semi arbitrary ID
 			// see: http://wowwiki.wikia.com/wiki/SpecializationID
@@ -62,7 +62,7 @@ class ParseWorker {
 				this.analyzers.push(new FeralDruidSubAnalyzer(
 						playerName, combatantInfo, this.fightInfo, this.enemyNameMapping));
 						
-			} else if ( combatantinfo.specID == 264 ) {
+			} else if ( combatantInfo.specID == 264 ) {
 				console.log(playerName + " - Resto Shaman");
 				console.log(combatantinfo);
 				this.analyzers.push(new RestoShamanSubAnalyzer(
