@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Gao's WCL Analyzer</title>
+  <title>Gao + Sref's WCL Analyzer</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -23,10 +23,11 @@
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Gao's WCL Analyzer</a>
+      <a class="navbar-brand" href="#">Gao + Sref's WCL Analyzer</a>
     </div>
   </div>
 </nav>
+
   
 <div class="container">
   <div class="row">
@@ -34,61 +35,116 @@
 	<div class="col-sm-8" id="app-container"></div>
     
     <div class="col-sm-4">
-      <div class="well text-justify">
-        <h4>Usage</h4>
-        <p>Find a <a href="https://www.warcraftlogs.com/">WarcraftLogs</a> report you'd like to analyze, copy the URL (or just the report code) into the input box, and press the 'Get' button.</p>
-        <p>Select the specific fight you'd like to analyze, and press the 'Analyze' button. Analysis may take up to a minute to complete.</p>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+          <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Usage
+            </a>
+          </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            <p>Find a <a href="https://www.warcraftlogs.com/">WarcraftLogs</a> report you'd like to analyze, copy the URL (or just the report code) into the input box, and press the 'Get' button.</p>
+            <p>Select the specific fight you'd like to analyze, and press the 'Analyze' button. Analysis may take up to a minute to complete.</p>
+          </div>
+        </div>
       </div>
-	  <div class="well text-justify">
-        <h4>Feral Druid Analysis</h4>
-		<p><u>Expected AB Uptime</u></p>
-		<p>Uses your actual ability cast times / targets to calculate your <i>expected</i> <a href="http://www.wowhead.com/spell=210705/ashamanes-rip">Ashamane's Rip</a> uptime. Expected uptime is contrasted with actual uptime from logs. Results are presented for every enemy target you used Rip on. All uptimes are a percentage of the total fight time.</p>
-		<p>The Ashamane's Bite artifact talent can be frustrating because while skill definitely contributes to uptime, the largest factor in an individual fight is pure luck. This analyzer seeks to remove luck from the equation when analyzing logs by letting you see your expected uptime based only on your ability timings.</p>
-		<p>This analyzer should also allow you to rage at your poor proc luck, something which would no doubt otherwise be in short supply.</p>
-		<p><b>SHORTCOMINGS: This analyzer is still <i>experimental</i>, and the code is a mess and needs to be refactored. Calculated Rip uptimes are very slightly off from the WCL reported values and I'm not sure why. Simulated Thrash / Swipe / BrS can proc AB on multiple targets while this can't actually happen in practice. Swiping multiple targets with Rip is uncommon enough that this shouldn't make a noticable difference in sim. Simulator currently assumes you have t192pc, which is currently a good assumption but it will need to be updated to check in the future.</b></p>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Resto Druid Analysis
+            </a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            <p><u>Average Mastery Stacks</u></p>
+            <p>Calculates the average number of mastery stacks you benefit from when healing. This average is weighted with respect to healing done (before mastery).</p>
+            <p>The 'All Healing' entry counts the average over all your healing (and absorbs), even ones that don't benefit from Mastery like Ysera's Gift or Prydaz. This can give you a good feel for how much Mastery is contributing to overall healing done.</p>
+            <p>The 'Druid Spells' entry counts the average only over the healing done by spells that can benefit from Mastery. This is likely the right number to enter into a spreadsheet for calculating stat weights.</p>
+            <br>
+            <p><u>Spell Mastery</u></p>
+                <p>Calculates how much of your healing can be attributed to each of your HoT's mastery stacks. For example, if you took the talent <a href="http://www.wowhead.com/spell=200390/cultivation">Cultivation</a>, healing from your <i>other</i> spells on a target with your Cultivation on it will heal for more because of the extra mastery stack provided by Cultivation. This is healing that wouldn't have happened had you not specced Cultivation, but it's completely invisible in basic logs. This analyzer seeks to remedy the issue.</p>
+            <p>Results are presented as a percentage of your total healing done over the encounter, including from trinkets / legendaries. 'Direct' healing amounts should correspond to the numbers you see in the WCL report itself.</p>
+                <p>Oh, and yes: <a href="http://www.wowhead.com/spell=22842/frenzied-regeneration">Frenzied Regeneration</a> does count towards mastery for whatever reason.</p>
+            <p><u>Mastery Procs</u></p>
+            <p>Calculates healing attributable to certain mastery stacks, presented as a percentage of total healing. Current Mastery procs supported are the <a href="http://www.wowhead.com/spell=232378/astral-harmony">T19 2 piece bonus</a> and the <a href="http://www.wowhead.com/spell=224149/jacins-ruse">Jacin's Ruse set bonus.</a></p>
+          </div>
+        </div>
       </div>
-      <div class="well text-justify">
-        <h4>Resto Druid Analysis</h4>
-		<p><u>Average Mastery Stacks</u></p>
-		<p>Calculates the average number of mastery stacks you benefit from when healing. This average is weighted with respect to healing done (before mastery).</p>
-		<p>The 'All Healing' entry counts the average over all your healing (and absorbs), even ones that don't benefit from Mastery like Ysera's Gift or Prydaz. This can give you a good feel for how much Mastery is contributing to overall healing done.</p>
-		<p>The 'Druid Spells' entry counts the average only over the healing done by spells that can benefit from Mastery. This is likely the right number to enter into a spreadsheet for calculating stat weights.</p>
-		<br>
-		<p><u>Spell Mastery</u></p>
-        <p>Calculates how much of your healing can be attributed to each of your HoT's mastery stacks. For example, if you took the talent <a href="http://www.wowhead.com/spell=200390/cultivation">Cultivation</a>, healing from your <i>other</i> spells on a target with your Cultivation on it will heal for more because of the extra mastery stack provided by Cultivation. This is healing that wouldn't have happened had you not specced Cultivation, but it's completely invisible in basic logs. This analyzer seeks to remedy the issue.</p>
-		<p>Results are presented as a percentage of your total healing done over the encounter, including from trinkets / legendaries. 'Direct' healing amounts should correspond to the numbers you see in the WCL report itself.</p>
-        <p>Oh, and yes: <a href="http://www.wowhead.com/spell=22842/frenzied-regeneration">Frenzied Regeneration</a> does count towards mastery for whatever reason.</p>
-		<p><u>Mastery Procs</u></p>
-		<p>Calculates healing attributable to certain mastery stacks, presented as a percentage of total healing. Current Mastery procs supported are the <a href="http://www.wowhead.com/spell=232378/astral-harmony">T19 2 piece bonus</a> and the <a href="http://www.wowhead.com/spell=224149/jacins-ruse">Jacin's Ruse set bonus.</a></p>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingThree">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            Feral Druid Analysis
+
+            </a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+              <p><u>Expected AB Uptime</u></p>
+              <p>Uses your actual ability cast times / targets to calculate your <i>expected</i> <a href="http://www.wowhead.com/spell=210705/ashamanes-rip">Ashamane's Rip</a> uptime. Expected uptime is contrasted with actual uptime from logs. Results are presented for every enemy target you used Rip on. All uptimes are a percentage of the total fight time.</p>
+              <p>The Ashamane's Bite artifact talent can be frustrating because while skill definitely contributes to uptime, the largest factor in an individual fight is pure luck. This analyzer seeks to remove luck from the equation when analyzing logs by letting you see your expected uptime based only on your ability timings.</p>
+              <p>This analyzer should also allow you to rage at your poor proc luck, something which would no doubt otherwise be in short supply.</p>
+              <p><b>SHORTCOMINGS: This analyzer is still <i>experimental</i>, and the code is a mess and needs to be refactored. Calculated Rip uptimes are very slightly off from the WCL reported values and I'm not sure why. Simulated Thrash / Swipe / BrS can proc AB on multiple targets while this can't actually happen in practice. Swiping multiple targets with Rip is uncommon enough that this shouldn't make a noticable difference in sim. Simulator currently assumes you have t192pc, which is currently a good assumption but it will need to be updated to check in the future.</b></p>
+          </div>
+        </div>
       </div>
-	  <div class="well text-justify">
-		<h4>Changelog</h4>
-    <h5>2017-05-17</h5>
-    <ul>
-          <li>Starting resto shaman mastery analyzer</li>
-        </ul>
-		<h5>4/28/2017</h5>
-		<ul>
-          <li>Added Feral Analyzer</li>
-        </ul>
-		<h5>4/24/2017</h5>
-		<ul>
-          <li>Added entries for healing attributable to the T19 2 piece and to Jacin's Ruse</li>
-        </ul>
-		<h5>4/22/2017</h5>
-		<ul>
-          <li>Added raw healing numbers and avg mastery stacks, improved data presentation.</li>
-        </ul>
-		<h5>4/21/2017</h5>
-		<ul>
-          <li>Initial Release</li>
-        </ul>
-	  </div>
-	  <div class="well text-justify">
-        <h4>Information</h4>
-		<p>UI Layout inspired by the <a href="https://druid-legendary-analyser.herokuapp.com/#">Restoration Druid Legendary Analyser</a>, which is another great WCL analysis tool for Resto Druids.
-        <p>Source available <a href="https://github.com/kfinch/sref-rdruid-analyzer">here</a>, and you can contact me with questions or suggestions on Discord : Gao#7513</p>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingFour">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+            Changelog
+            </a>
+          </h4>
+        </div>
+        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+          <div class="panel-body">
+              <h5>2017-05-17</h5>
+              <ul>
+                    <li>Starting resto shaman mastery analyzer</li>
+                  </ul>
+              <h5>4/28/2017</h5>
+              <ul>
+                    <li>Added Feral Analyzer</li>
+                  </ul>
+              <h5>4/24/2017</h5>
+              <ul>
+                    <li>Added entries for healing attributable to the T19 2 piece and to Jacin's Ruse</li>
+                  </ul>
+              <h5>4/22/2017</h5>
+              <ul>
+                    <li>Added raw healing numbers and avg mastery stacks, improved data presentation.</li>
+                  </ul>
+              <h5>4/21/2017</h5>
+              <ul>
+                    <li>Initial Release</li>
+                  </ul>
+              </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingFive">
+            <h4 class="panel-title">
+              <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+              Contact
+              </a>
+            </h4>
+          </div>
+          <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+            <div class="panel-body">
+              <p>UI Layout inspired by the <a href="https://druid-legendary-analyser.herokuapp.com/#">Restoration Druid Legendary Analyser</a>, which is another great WCL analysis tool for Resto Druids.
+              <p>Source available <a href="https://github.com/awlego/gao-sref-wcl-analyzer">here</a>, and you can contact me with questions or suggestions on Discord : Gao#7513 and Sref#3865</p>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
     </div>
     
   </div>

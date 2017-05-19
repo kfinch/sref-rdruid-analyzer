@@ -49,7 +49,7 @@ class RestoShamanSubAnalyzer {
 		
 		this.spellHealingMap = new Map(); // map from the spell ID to obj with the direct and mastery healing
 		for(let spellId of this.shamanHeals.keys()) {
-			this.spellHealingMap.set(spellId, {'direct':0, 'mastery':0});
+			this.spellHealingMap.set(spellId, {'direct':0, 'mastery_amount':0, 'num_heals':0, 'mastery_percentage':0, 'avg_target_health':0});
 		}
 	}
 	
@@ -60,6 +60,8 @@ class RestoShamanSubAnalyzer {
 	 * that to a running total. Be careful to handle overhealing correctly by
 	 * only adding the contribution from mastery that did not go into more
 	 * overhealing.
+	 * 
+	 * Want to track the avg % health of targets healed, per spell, weighted by amount healed.
 	 * 
 	 * Shortcomings:
 	 * Does not handle mastery buffs/procs that happen in the middle of the fight.
@@ -89,23 +91,39 @@ class RestoShamanSubAnalyzer {
 	combatantInfo(wclEvent) {	
 		let targetId = wclEvent.sourceID; // aura's target is combatantinfo source
 	}
+
+	getHealHealthPercent(healAmount, maxHealth, currentHealth) {
+		let preHealHealth = currentHealth - healAmount;
+		return Math.round(preHealHealth / maxHealth);
+	}
+
+	// TODO not done.
+	getMasteryHealingAmountOverhealAdjusted(healAmount, overhealAmount, maxHealth, currentHealth) {
+		let hhp = this.getHealHealthPercent(healAmount, maxHealth, currentHealth);
+		let healingAmountFromMastery = hhp * masteryFactor;
+
+		return Math.round(healingAmountFromMastery);
+	}
+
+	getMasteryHealingPercentage(healAmount, maxHealth, currentHealth) {
+		let hhp = this.getHealHealthPercent(healAmount, maxHealth, currentHealth);
+		return (this.getCurrMastery() * ((100-hhp)/100));
+	}
+
+	getMasteryHealingAmount(healAmount, masteryPercentageHealingIncrease) {
+		return Math.round(healAmount * masteryPercentageHealingIncrease);
+	}
 	
 	// parse 'heal' event
 	heal(wclEvent) {
 		let targetId = wclEvent.targetID;
 		let spellId = wclEvent.ability.guid;
-
-		let masteryFactor = this.masteryRatingPerOne;
 		
-		let maxHealth = wclEvent.maxHitPoints;
-		let amount = wclEvent.amount; // doesn't include overheal
-		let afterHealHealth = wclEvent.hitPoints;
-		let beforeHealHealth = afterHealHealth - amount;
+		let amount = wclEvent.amount
 
-		let masteryMultiplier = (beforeHealHealth / maxHealth) * masteryFactor;
+		let healMasteryPercent = this.getMasteryHealingPercentage(amount, wclEvent.maxHitPoints, wclEvent.hitPoints);
+		let healMasteryAmount = this.getMasteryHealingAmount(healMasteryPercent);
 
-		let masteryHealAmount = masteryMultiplier * amount;
-		
 		if (wclEvent.absorbed !== undefined) { // absorbed healing is effective healing
 			amount+= wclEvent.absorbed;
 		}
@@ -114,15 +132,13 @@ class RestoShamanSubAnalyzer {
 		
 		if (this.spellHealingMap.has(spellId)) {
 			this.spellHealingMap.get(spellId).direct += amount;
-			
 		}
 		
 		if (this.shamanHeals.has(spellId)) { // spell was boosted by mastery
-
-			//TODO this is not how I should do this. Fow shaman mastery, I want to 
-			// be tracking the average % the targets were at when they got healed,
-			// weighted by how much they got healed for maybe?
-			this.spellHealingMap.get(spellId).mastery += masteryMultiplier;
+			this.spellHealingMap.get(spellId).num_heals++;
+			this.spellHealingMap.get(spellId).mastery_percentage += healMasteryPercent; 
+			this.spellHealingMap.get(spellId).avg_target_health = this.spellHealingMap.get(spellId).mastery_percentage / this.spellHealingMap.get(spellId).num_heals;
+			this.spellHealingMap.get(spellId).mastery_amount += healMasteryAmount;
 
 		} else { // spell not boosted by mastery
 			this.totalNoMasteryHealing += amount;
@@ -152,11 +168,11 @@ class RestoShamanSubAnalyzer {
 		let avgTotalMasteryHealing =
 				roundTo(this.totalHealing - this.totalNoMasteryHealing, 2);
 		let percentageMasteryHealing = 
-				roundTo(avgTotalMasteryHealing/this.totalHealing, 2);
+				roundTo((avgTotalMasteryHealing/this.totalHealing) * 100, 2);
 		$('<li>', {"class":"list-group-item small"})
 				.html("<p><b>Average Mastery Healing</b></p>" +
-						"&emsp;Raw Healing Due to Mastery: <b>" + avgTotalMasteryHealing + "</b><br>" +
-						"&emsp;Mastery Healing as % of Total Healing: <b>" + percentageMasteryHealing + "</b><br>")
+						"&emsp;Raw Healing Due to Mastery: <b>" + avgTotalMasteryHealing.toLocaleString() + "</b><br>" +
+						"&emsp;Mastery Healing as % of Total Healing: <b>" + percentageMasteryHealing + "%</b><br>")
 				.appendTo(spellListElement);
 		
 		// add report for each spell
@@ -168,12 +184,13 @@ class RestoShamanSubAnalyzer {
 			}
 			
 			let directPercent = roundTo(spellHealingObj.direct / this.totalHealing * 100, 1);
-			let masteryPercent = roundTo(spellHealingObj.mastery / this.totalHealing * 100, 1);		
+			let masteryPercent = roundTo(spellHealingObj.mastery_amount / this.totalHealing * 100, 1);		
 			spellText += "<p>&emsp;" + getSpellLinkHtml(spellId, this.shamanHeals.get(spellId)) +
 					'<br>&emsp;&emsp;Direct: <b>' + directPercent + "%</b> " +
 					toColorHtml("(" + spellHealingObj.direct.toLocaleString() + ")", this.darkGrayColor) +
-					'<br>&emsp;&emsp;Mastery: <b>' + masteryPercent + "%</b> " +
-					toColorHtml("(" + spellHealingObj.mastery.toLocaleString() + ")", this.darkGrayColor) +
+					'<br>&emsp;&emsp;Mastery: <b>' + spellHealingObj.mastery_percentage.toLocaleString() + "%</b> " +
+					toColorHtml("(" + spellHealingObj.mastery_amount.toLocaleString() + ")", this.darkGrayColor) +
+					'<br>&emsp;&emsp;Avg Health: <b>' + spellHealingObj.avg_target_health.toLocaleString() + "%</b> " +
 					"</p>";
 		}
 		$('<li>', {"class":"list-group-item small"})
@@ -186,6 +203,18 @@ class RestoShamanSubAnalyzer {
 				.appendTo(spellListElement);
 		
 		return res;
+	}
+
+	// uses curr mastery rating (including buffs), and calcs mastery % from it
+	getCurrMastery() {
+		let currMasteryRating = this.baseMasteryRating;
+		
+		return this.masteryRatingToBonus(currMasteryRating);
+	}
+
+		// gets bonus multiplier from mastery rating
+	masteryRatingToBonus(rating) {
+		return (this.baseMasteryPercent + (rating / this.masteryRatingPerOne)) / 100;
 	}
 	
 }
