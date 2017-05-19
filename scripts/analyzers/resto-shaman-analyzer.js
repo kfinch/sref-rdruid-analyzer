@@ -188,9 +188,9 @@ class RestoShamanSubAnalyzer {
 			spellText += "<p>&emsp;" + getSpellLinkHtml(spellId, this.shamanHeals.get(spellId)) +
 					'<br>&emsp;&emsp;Direct: <b>' + directPercent + "%</b> " +
 					toColorHtml("(" + spellHealingObj.direct.toLocaleString() + ")", this.darkGrayColor) +
-					'<br>&emsp;&emsp;Mastery: <b>' + spellHealingObj.mastery_percentage.toLocaleString() + "%</b> " +
+					'<br>&emsp;&emsp;Mastery: <b>' + masteryPercent + "%</b> " +
 					toColorHtml("(" + spellHealingObj.mastery_amount.toLocaleString() + ")", this.darkGrayColor) +
-					'<br>&emsp;&emsp;Avg Health: <b>' + spellHealingObj.avg_target_health.toLocaleString() + "%</b> " +
+					'<br>&emsp;&emsp;Avg Health: <b>' + spellHealingObj.avg_target_health + "%</b> " +
 					"</p>";
 		}
 		$('<li>', {"class":"list-group-item small"})
