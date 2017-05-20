@@ -49,7 +49,12 @@ class RestoShamanSubAnalyzer {
 		
 		this.spellHealingMap = new Map(); // map from the spell ID to obj with the direct and mastery healing
 		for(let spellId of this.shamanHeals.keys()) {
-			this.spellHealingMap.set(spellId, {'direct':0, 'mastery_amount':0, 'num_heals':0, 'mastery_percentage':0, 'avg_target_health':0});
+			this.spellHealingMap.set(spellId, {'direct':0, 'mastery_amount':0, 'num_heals':0, 'mastery_percentage':0});
+			// direct: total amount healed by the spell
+			// mastery_amount: amount of healing from mastery
+			// num_heals: number of times this spell healed a target
+			// mastery_percentage: this is a running total of all percentages. It will be divided by num_heals later 
+			//						to get an average % health of targets healed by this spell
 		}
 	}
 	
@@ -86,6 +91,22 @@ class RestoShamanSubAnalyzer {
 			default :
 		}
 	}
+
+	// to calculate the value of mastery we use the following forumulas: 
+	// 	base heal + mastery contribution = total heal
+	// base heal + base heal * mastery multiplier = total heal
+	// base heal + base heal * (mastery % / 100) * (health % / 100) = total heal
+	
+	// mastery contribution = base heal * (mastery % / 100) * (health % / 100)
+	
+	// in order to know the mastery contribution, we need to calculate the base heal:
+	// base heal + base heal * (mastery % / 100) * (health % / 100) = total heal
+	// base heal (1 + (1 * (mastery % / 100) * (health % / 100))) = total heal
+	// base heal = total heal / (1 + (1 * (mastery % / 100) * (health % / 100)))
+	
+	// THEREFORE
+	
+	// mastery contribution = total heal / (1 + (1 * (mastery % / 100) * (health % / 100))) * (mastery % / 100) * (health % / 100)
 	
 	// parse 'combatantinfo' event
 	combatantInfo(wclEvent) {	
@@ -94,7 +115,7 @@ class RestoShamanSubAnalyzer {
 
 	getHealHealthPercent(healAmount, maxHealth, currentHealth) {
 		let preHealHealth = currentHealth - healAmount;
-		return Math.round(preHealHealth / maxHealth);
+		return Math.round(preHealHealth / maxHealth); // TODO check how much I should round this
 	}
 
 	// TODO not done.
@@ -105,13 +126,19 @@ class RestoShamanSubAnalyzer {
 		return Math.round(healingAmountFromMastery);
 	}
 
-	getMasteryHealingPercentage(healAmount, maxHealth, currentHealth) {
-		let hhp = this.getHealHealthPercent(healAmount, maxHealth, currentHealth);
-		return (this.getCurrMastery() * ((100-hhp)/100));
+	getBaseHeal(healAmount, maxHealth, currentHealth) {
+		return (healAmount / (1 + (1 * (this.getCurrMasteryPercentage()/100) * (this.getHealHealthPercent(healAmount, maxHealth, currentHealth)/100))));
 	}
 
-	getMasteryHealingAmount(healAmount, masteryPercentageHealingIncrease) {
-		return Math.round(healAmount * masteryPercentageHealingIncrease);
+	getMasteryHealingPercentage(healAmount, maxHealth, currentHealth) {
+		let hhp = this.getHealHealthPercent(healAmount, maxHealth, currentHealth);
+		return (this.getCurrMasteryPercentage() * ((100-hhp)/100));
+	}
+
+	getMasteryHealingAmount(healAmount, maxHealth, currentHealth) {
+		// could also use mastery contribution = total heal / (1 + (1 * (mastery % / 100) * (health % / 100))) * (mastery % / 100) * (health % / 100)
+		// but I already made the get base heal function which has the same math, so might as well just subtract from healAmount.
+		return (healAmount - this.getBaseHeal(healAmount, maxHealth, currentHealth));
 	}
 	
 	// parse 'heal' event
@@ -119,10 +146,13 @@ class RestoShamanSubAnalyzer {
 		let targetId = wclEvent.targetID;
 		let spellId = wclEvent.ability.guid;
 		
-		let amount = wclEvent.amount
+		let amount = wclEvent.amount;
+		let overhealAmount = wclEvent.overheal;
+		let maxHP = wclEvent.maxHitPoints;
+		let hp = wclEvent.hitPoints;
 
-		let healMasteryPercent = this.getMasteryHealingPercentage(amount, wclEvent.maxHitPoints, wclEvent.hitPoints);
-		let healMasteryAmount = this.getMasteryHealingAmount(healMasteryPercent);
+		let healMasteryAmount = this.getMasteryHealingAmount(amount, maxHP, hp)
+		let healMasteryPercent = this.getHealHealthPercent(amount, maxHP, hp)
 
 		if (wclEvent.absorbed !== undefined) { // absorbed healing is effective healing
 			amount+= wclEvent.absorbed;
@@ -137,7 +167,6 @@ class RestoShamanSubAnalyzer {
 		if (this.shamanHeals.has(spellId)) { // spell was boosted by mastery
 			this.spellHealingMap.get(spellId).num_heals++;
 			this.spellHealingMap.get(spellId).mastery_percentage += healMasteryPercent; 
-			this.spellHealingMap.get(spellId).avg_target_health = this.spellHealingMap.get(spellId).mastery_percentage / this.spellHealingMap.get(spellId).num_heals;
 			this.spellHealingMap.get(spellId).mastery_amount += healMasteryAmount;
 
 		} else { // spell not boosted by mastery
@@ -184,13 +213,14 @@ class RestoShamanSubAnalyzer {
 			}
 			
 			let directPercent = roundTo(spellHealingObj.direct / this.totalHealing * 100, 1);
-			let masteryPercent = roundTo(spellHealingObj.mastery_amount / this.totalHealing * 100, 1);		
+			let masteryPercent = roundTo(spellHealingObj.mastery_amount / this.totalHealing * 100, 1);
+			let avgTargetHealth = this.spellHealingMap.get(spellId).mastery_percentage / this.spellHealingMap.get(spellId).num_heals;		
 			spellText += "<p>&emsp;" + getSpellLinkHtml(spellId, this.shamanHeals.get(spellId)) +
 					'<br>&emsp;&emsp;Direct: <b>' + directPercent + "%</b> " +
 					toColorHtml("(" + spellHealingObj.direct.toLocaleString() + ")", this.darkGrayColor) +
 					'<br>&emsp;&emsp;Mastery: <b>' + masteryPercent + "%</b> " +
 					toColorHtml("(" + spellHealingObj.mastery_amount.toLocaleString() + ")", this.darkGrayColor) +
-					'<br>&emsp;&emsp;Avg Health: <b>' + spellHealingObj.avg_target_health + "%</b> " +
+					'<br>&emsp;&emsp;Avg Health: <b>' + avgTargetHealth + "%</b> " +
 					"</p>";
 		}
 		$('<li>', {"class":"list-group-item small"})
@@ -206,7 +236,7 @@ class RestoShamanSubAnalyzer {
 	}
 
 	// uses curr mastery rating (including buffs), and calcs mastery % from it
-	getCurrMastery() {
+	getCurrMasteryPercentage() {
 		let currMasteryRating = this.baseMasteryRating;
 		
 		return this.masteryRatingToBonus(currMasteryRating);
