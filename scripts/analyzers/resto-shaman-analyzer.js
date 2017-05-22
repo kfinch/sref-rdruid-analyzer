@@ -28,7 +28,7 @@ class RestoShamanSubAnalyzer {
 		this.shamanHeals.set(52042, "Healing Stream Totem");
 		this.shamanHeals.set(207360, "Queen's Decree");
 		this.shamanHeals.set(77472, "Healing Wave");
-		this.shamanHeals.set(143477, "Healing Tide Totem");
+		this.shamanHeals.set(114942, "Healing Tide Totem");
 		this.shamanHeals.set(8004, "Healing Surge");
 		this.shamanHeals.set(114911, "Ancestral Guidance"); // not sure if this actually is buffed by mastery
 		this.shamanHeals.set(73921, "Healing Rain");
