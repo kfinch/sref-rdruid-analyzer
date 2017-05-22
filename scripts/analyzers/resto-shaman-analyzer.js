@@ -216,7 +216,7 @@ class RestoShamanSubAnalyzer {
 			}
 			
 			let directPercent = roundTo(spellHealingObj.direct / this.totalHealing * 100, 1);
-			let masteryPercent = roundTo(spellHealingObj.mastery_amount / this.totalHealing * 100, 1);
+			let masteryPercent = roundTo((spellHealingObj.mastery_amount / this.totalHealing) * 100, 1);
 			let avgTargetHealth = roundTo((this.spellHealingMap.get(spellId).health_percentage / this.spellHealingMap.get(spellId).num_heals), 2);		
 			spellText += "<p>&emsp;" + getSpellLinkHtml(spellId, this.shamanHeals.get(spellId)) +
 					'<br>&emsp;&emsp;Direct: <b>' + directPercent + "%</b> " +
@@ -242,7 +242,7 @@ class RestoShamanSubAnalyzer {
 	getCurrMasteryPercentage() {
 		let currMasteryRating = this.baseMasteryRating;
 		
-		return this.masteryRatingToBonus(currMasteryRating);
+		return this.masteryRatingToBonus(currMasteryRating) * 100;
 	}
 
 		// gets bonus multiplier from mastery rating
