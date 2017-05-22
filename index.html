@@ -56,11 +56,28 @@
         <div class="panel-heading" role="tab" id="headingTwo">
           <h4 class="panel-title">
             <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              Resto Druid Analysis
+              Resto Shaman Analysis
             </a>
           </h4>
         </div>
         <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            <p><u>Average Mastery Healing</u></p>
+            <p>Calculates the raw healing that is done due to your mastery. It then shows this as a % of your total healing.</p>
+            <p>Spell Mastery Contributions</p>
+            <p>This gives the direct and mastery amounts and % (of total healing) of your healing on a per spell breakdown. It also publishes the average health of targets healed by that spell.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingThree">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Resto Druid Analysis
+            </a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
           <div class="panel-body">
             <p><u>Average Mastery Stacks</u></p>
             <p>Calculates the average number of mastery stacks you benefit from when healing. This average is weighted with respect to healing done (before mastery).</p>
@@ -77,15 +94,15 @@
         </div>
       </div>
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingThree">
+        <div class="panel-heading" role="tab" id="headingFour">
           <h4 class="panel-title">
-            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
             Feral Druid Analysis
 
             </a>
           </h4>
         </div>
-        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
           <div class="panel-body">
               <p><u>Expected AB Uptime</u></p>
               <p>Uses your actual ability cast times / targets to calculate your <i>expected</i> <a href="http://www.wowhead.com/spell=210705/ashamanes-rip">Ashamane's Rip</a> uptime. Expected uptime is contrasted with actual uptime from logs. Results are presented for every enemy target you used Rip on. All uptimes are a percentage of the total fight time.</p>
@@ -96,18 +113,18 @@
         </div>
       </div>
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingFour">
+        <div class="panel-heading" role="tab" id="headingFive">
           <h4 class="panel-title">
-            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
             Changelog
             </a>
           </h4>
         </div>
-        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+        <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
           <div class="panel-body">
-              <h5>2017-05-17</h5>
+              <h5>2017-05-22</h5>
               <ul>
-                    <li>Starting resto shaman mastery analyzer</li>
+                    <li>Resto Shaman Analyzer added.</li>
                   </ul>
               <h5>4/28/2017</h5>
               <ul>
@@ -129,16 +146,17 @@
           </div>
         </div>
         <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingFive">
+          <div class="panel-heading" role="tab" id="headingSix">
             <h4 class="panel-title">
-              <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+              <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
               Contact
               </a>
             </h4>
           </div>
-          <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+          <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
             <div class="panel-body">
               <p>UI Layout inspired by the <a href="https://druid-legendary-analyser.herokuapp.com/#">Restoration Druid Legendary Analyser</a>, which is another great WCL analysis tool for Resto Druids.
+              <p>Code built off of Sref's awesome analyzer. Resto shaman analyzer built by Gao.
               <p>Source available <a href="https://github.com/awlego/gao-sref-wcl-analyzer">here</a>, and you can contact me with questions or suggestions on Discord : Gao#7513 and Sref#3865</p>
             </div>
           </div>
