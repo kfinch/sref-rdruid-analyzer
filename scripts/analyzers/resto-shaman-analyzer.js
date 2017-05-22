@@ -15,30 +15,33 @@ class RestoShamanSubAnalyzer {
 		this.fight = fight;
 		this.enemyNameMapping = enemyNameMapping;
 		
-		this.shamanBlueColor = '0000ff'; // not actually the exact color -- just a 1st guess
+		this.shamanBlueColor = '2359ff';
 		this.darkGrayColor = '888888';
+
+		// missing = healing rain, riptide, ancestral guidance?, restorative mists?, unleash life, wellspring,
 		
 		// these are the spells that can be boosted by Mastery
 		this.shamanHeals = new Map();
 		this.shamanHeals.set(1064, "Chain Heal");
-		this.shamanHeals.set(75367, "Riptide");
-		//this.shamanHeals.set(, "Riptide"); // is there a second spell Id for the HoT part of riptide?
-		this.shamanHeals.set(209069, "Tidal Totem");
+		this.shamanHeals.set(61295, "Riptide");
+		this.shamanHeals.set(209069, "Tidal Totem"); // todo maybe combine this with riptide?
 		this.shamanHeals.set(52042, "Healing Stream Totem");
-		//this.shamanHeals.set(, "Healing Stream Totem");
 		this.shamanHeals.set(207360, "Queen's Decree");
 		this.shamanHeals.set(77472, "Healing Wave");
-		//this.shamanHeals.set(, "Healing Tide Totem"); // pretty sure this is just a duplicate of Healing Tide
-		this.shamanHeals.set(143477, "Healing Tide");
+		this.shamanHeals.set(143477, "Healing Tide Totem");
 		this.shamanHeals.set(8004, "Healing Surge");
-		this.shamanHeals.set(108281, "Ancestral Guidance");
-		this.shamanHeals.set(73920, "Healing Rain");
+		this.shamanHeals.set(114911, "Ancestral Guidance"); // not sure if this actually is buffed by mastery
+		this.shamanHeals.set(73921, "Healing Rain");
 		this.shamanHeals.set(207778, "Gift of the Queen");
 		this.shamanHeals.set(157503, "Cloudburst");
-		//this.shamanHeals.set(, "Earthen Shield Totem"); // pretty sure this is also just a duplicate
-		this.shamanHeals.set(198839, "Earthen Shield");
+		this.shamanHeals.set(114083, "Restorative Mists"); // not sure if thie actually is buffed
+		this.shamanHeals.set(73685, "Unleash Life");
+		this.shamanHeals.set(197995, "Wellspring"); // could also be 197997
+		//this.shamanHeals.set(0, "Ancestral Vigor"); // this is not a spell, but I want to add healing to it manually so I want it 
+
+		//todo calculate value from extra HP from ancestral vigor
 		
-		this.baseMasteryPercent = 21; // TODO need to verify
+		this.baseMasteryPercent = 21;
 		this.masteryRatingPerOne = 133.33;
 		
 		this.playerId = this.playerInfo.sourceID;
@@ -133,6 +136,7 @@ class RestoShamanSubAnalyzer {
 		return Math.round(healAmount / (1 + (1 * currMasteryPercent/100) * (healHealthPercent/100)));
 	}
 
+	// not used -- not checked for accuracy
 	getMasteryHealingPercentage(healAmount, maxHealth, currentHealth) {
 		let hhp = this.getHealHealthPercent(healAmount, maxHealth, currentHealth);
 		return (this.getCurrMasteryPercentage() * ((100-hhp)/100));
@@ -213,6 +217,8 @@ class RestoShamanSubAnalyzer {
 			if(spellHealingObj.direct == 0) {
 				console.log("No healing from spell ID " + spellId);
 				continue; // don't include result entry for spell you never used
+			} else {
+				console.log("Healing from spell ID " + spellId);
 			}
 			
 			let directPercent = roundTo(spellHealingObj.direct / this.totalHealing * 100, 1);
