@@ -236,8 +236,8 @@ class RestoShamanSubAnalyzer {
 				console.log("Healing from spell ID " + spellId);
 			}
 			
-			let directPercent = roundTo(spellHealingObj.direct / this.totalHealing * 100, 1);
-			let masteryPercent = roundTo((spellHealingObj.mastery_amount / this.totalHealing) * 100, 1);
+			let directPercent = roundTo(spellHealingObj.direct / (this.totalHealing - this.totalNonSpellHealing) * 100, 1);
+			let masteryPercent = roundTo((spellHealingObj.mastery_amount / (this.totalHealing - this.totalNonSpellHealing)) * 100, 1);
 			let avgTargetHealth = roundTo((this.spellHealingMap.get(spellId).health_percentage / this.spellHealingMap.get(spellId).num_heals), 2);		
 			spellText += "<p>&emsp;" + getSpellLinkHtml(spellId, this.shamanHeals.get(spellId)) +
 					'<br>&emsp;&emsp;Direct: <b>' + directPercent + "%</b> " +
