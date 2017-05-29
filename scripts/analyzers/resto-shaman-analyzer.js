@@ -17,8 +17,6 @@ class RestoShamanSubAnalyzer {
 		
 		this.shamanBlueColor = '2359ff';
 		this.darkGrayColor = '888888';
-
-		// missing = healing rain, riptide, ancestral guidance?, restorative mists?, unleash life, wellspring,
 		
 		// these are the spells that can be boosted by Mastery
 		this.shamanHeals = new Map();
@@ -30,16 +28,19 @@ class RestoShamanSubAnalyzer {
 		this.shamanHeals.set(77472, "Healing Wave");
 		this.shamanHeals.set(114942, "Healing Tide Totem");
 		this.shamanHeals.set(8004, "Healing Surge");
-		this.shamanHeals.set(114911, "Ancestral Guidance"); // not sure if this actually is buffed by mastery
 		this.shamanHeals.set(73921, "Healing Rain");
 		this.shamanHeals.set(207778, "Gift of the Queen");
-		this.shamanHeals.set(157503, "Cloudburst");
-		this.shamanHeals.set(114083, "Restorative Mists"); // not sure if thie actually is buffed
 		this.shamanHeals.set(73685, "Unleash Life");
 		this.shamanHeals.set(197995, "Wellspring"); // could also be 197997
-		//this.shamanHeals.set(0, "Ancestral Vigor"); // this is not a spell, but I want to add healing to it manually so I want it 
+
+		// these spells don't directly benefit from mastery.
+		this.shamanAlreadyMasteryBoostedHeals = new Map();
+		this.shamanAlreadyMasteryBoostedHeals.set(157503, "Cloudburst");
+		this.shamanAlreadyMasteryBoostedHeals.set(114083, "Restorative Mists");
+		this.shamanAlreadyMasteryBoostedHeals.set(114911, "Ancestral Guidance");
 
 		//todo calculate value from extra HP from ancestral vigor
+		//this.shamanHeals.set(0, "Ancestral Vigor"); // this is not a spell, but I want to add healing to it manually so I want it 
 		
 		this.baseMasteryPercent = 21;
 		this.masteryRatingPerOne = 133.33;
@@ -48,6 +49,7 @@ class RestoShamanSubAnalyzer {
 		this.baseMasteryRating = this.playerInfo.mastery;
 		
 		this.totalHealing = 0; // total healing from all spells
+		this.totalNonSpellHealing = 0;
 		this.totalNoMasteryHealing = 0; // total healing before mastery
 		this.shamanSpellNoMasteryHealing = 0; // total healing before mastery from spells that benefit from mastery
 		
@@ -59,6 +61,12 @@ class RestoShamanSubAnalyzer {
 			// num_heals: number of times this spell healed a target
 			// health_percentage: this is a running total of all percentages. It will be divided by num_heals later 
 			//						to get an average % health of targets healed by this spell
+		}
+
+		// these only need the amount they healed logged
+		this.nonspellHealingMap = new Map(); // map from the spell ID to obj with 
+		for (let spellId of this.shamanAlreadyMasteryBoostedHeals.keys()) {
+			this.nonspellHealingMap.set(spellId, {'direct':0});
 		}
 	}
 	
@@ -170,6 +178,8 @@ class RestoShamanSubAnalyzer {
 		
 		if (this.spellHealingMap.has(spellId)) {
 			this.spellHealingMap.get(spellId).direct += amount;
+		} else if (this.nonspellHealingMap.has(spellId)) {
+			this.nonspellHealingMap.get(spellId).direct += amount;
 		}
 		
 		if (this.shamanHeals.has(spellId)) { // spell was boosted by mastery
@@ -178,6 +188,10 @@ class RestoShamanSubAnalyzer {
 			this.spellHealingMap.get(spellId).mastery_amount += healMasteryAmount;
 			this.totalNoMasteryHealing += baseHealAmount;
 
+		} else if (this.shamanAlreadyMasteryBoostedHeals.has(spellId)) {
+			// don't count towards no mastery healing if the spell was not a spell boosted by mastery,
+			// but was indirectly boosted by mastery.
+			this.totalNonSpellHealing += amount;
 		} else { // spell not boosted by mastery
 			this.totalNoMasteryHealing += amount;
 		}
@@ -200,11 +214,12 @@ class RestoShamanSubAnalyzer {
 		let spellListElement = $('<ul>', {"class":"list-group"})
 				.appendTo(res);
 				
-		// add report for avg HoT stacks
 		let avgTotalMasteryHealing =
-				roundTo(this.totalHealing - this.totalNoMasteryHealing, 2);
+				roundTo(this.totalHealing - this.totalNoMasteryHealing - this.totalNonSpellHealing, 2);
 		let percentageMasteryHealing = 
-				roundTo((avgTotalMasteryHealing/this.totalHealing) * 100, 2);
+				roundTo((avgTotalMasteryHealing/(this.totalHealing-this.totalNonSpellHealing)) * 100, 2);
+
+		// add the average mastery healing amount at the top.
 		$('<li>', {"class":"list-group-item small"})
 				.html("<p><b>Average Mastery Healing</b></p>" +
 						"&emsp;Raw Healing Due to Mastery: <b>" + avgTotalMasteryHealing.toLocaleString() + "</b><br>" +
@@ -232,6 +247,7 @@ class RestoShamanSubAnalyzer {
 					'<br>&emsp;&emsp;Avg Health: <b>' + avgTargetHealth + "%</b> " +
 					"</p>";
 		}
+
 		$('<li>', {"class":"list-group-item small"})
 				.html(spellText)
 				.appendTo(spellListElement);
