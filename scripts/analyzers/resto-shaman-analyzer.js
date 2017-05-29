@@ -133,7 +133,7 @@ class RestoShamanSubAnalyzer {
 	getBaseHeal(healAmount, maxHealth, currentHealth) {
 		let currMasteryPercent = this.getCurrMasteryPercentage();
 		let healHealthPercent = this.getHealHealthPercent(healAmount, maxHealth, currentHealth);
-		return Math.round(healAmount / (1 + (1 * currMasteryPercent/100) * (healHealthPercent/100)));
+		return Math.round(healAmount / (1 + (1 * currMasteryPercent/100) * (1-(healHealthPercent/100))));
 	}
 
 	// not used -- not checked for accuracy
