@@ -5,18 +5,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="src/css/index.css" type="text/css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="//wow.zamimg.com/widgets/power.js"></script>
   <script>var wowhead_tooltips = { "colorlinks": true, "iconizelinks": false, "renamelinks": false }</script>
   <!-- TODO: use a loader below instead... -->
-  <script src="scripts/utils.js"></script>
-  <script src="scripts/event-query.js"></script>
-  <script src="scripts/parser.js"></script>
-  <script src="scripts/analyzers/resto-druid-analyzer.js"></script>
-  <script src="scripts/analyzers/feral-druid-analyzer.js"></script>
-  <script src="scripts/analyzers/resto-shaman-analyzer.js"></script>
-  <script src="scripts/main.js"></script>
+  <script src="src/js/utils.js"></script>
+  <script src="src/js/event-query.js"></script>
+  <script src="src/js/parser.js"></script>
+  <script src="src/js/analyzers/resto-druid-analyzer.js"></script>
+  <script src="src/js/analyzers/feral-druid-analyzer.js"></script>
+  <script src="src/js/analyzers/resto-shaman-analyzer.js"></script>
+  <script src="src/js/main.js"></script>
 </head>
 <body>
 
@@ -28,14 +29,13 @@
   </div>
 </nav>
 
-  
+
 <div class="container">
   <div class="row">
-  
-	<div class="col-sm-8" id="app-container"></div>
-    
-    <div class="col-sm-4">
 
+	<div class="col-sm-8" id="app-container"></div>
+
+    <div class="col-sm-4">
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="headingOne">
@@ -108,7 +108,9 @@
               <p>Uses your actual ability cast times / targets to calculate your <i>expected</i> <a href="http://www.wowhead.com/spell=210705/ashamanes-rip">Ashamane's Rip</a> uptime. Expected uptime is contrasted with actual uptime from logs. Results are presented for every enemy target you used Rip on. All uptimes are a percentage of the total fight time.</p>
               <p>The Ashamane's Bite artifact talent can be frustrating because while skill definitely contributes to uptime, the largest factor in an individual fight is pure luck. This analyzer seeks to remove luck from the equation when analyzing logs by letting you see your expected uptime based only on your ability timings.</p>
               <p>This analyzer should also allow you to rage at your poor proc luck, something which would no doubt otherwise be in short supply.</p>
-              <p><b>SHORTCOMINGS: This analyzer is still <i>experimental</i>, and the code is a mess and needs to be refactored. Calculated Rip uptimes are very slightly off from the WCL reported values and I'm not sure why. Simulated Thrash / Swipe / BrS can proc AB on multiple targets while this can't actually happen in practice. Swiping multiple targets with Rip is uncommon enough that this shouldn't make a noticable difference in sim. Simulator currently assumes you have t192pc, which is currently a good assumption but it will need to be updated to check in the future.</b></p>
+
+              <p><b>SHORTCOMINGS: This analyzer is still <i>experimental</i>, and the code is a mess and needs to be refactored. Calculated Rip uptimes are very slightly off from the WCL reported values and I'm not sure why. Simulated Thrash / Swipe / BrS can proc AB on multiple targets while this can't actually happen in practice. Swiping multiple targets with Rip is uncommon enough that this shouldn't make a noticable difference in sim.</b></p>
+			  <p><b>Simulator currently assumes you have t19-2pc, which is an ok assumption but it will need to be updated to check in the future. Simulator currently assumes you don't have t20-4pc, which is a bad assumption. Also needs to be updated.</b></p>
           </div>
         </div>
       </div>
@@ -122,9 +124,13 @@
         </div>
         <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
           <div class="panel-body">
-              <h5>2017-05-22</h5>
+              <h5>8/1/2017</h5>
               <ul>
-                    <li>Resto Shaman Analyzer added.</li>
+                    <li>Added preliminary support for the <a href="http://ptr.wowhead.com/spell=253432/dreamer">T21 2pc HoT</a></li>
+                  </ul>
+              <h5>05/22/2017</h5>
+              <ul>
+                    <li>Gao: Resto Shaman Analyzer added.</li>
                   </ul>
               <h5>4/28/2017</h5>
               <ul>
@@ -164,7 +170,7 @@
       </div>
     </div>
     </div>
-    
+	  </div>
   </div>
 </div>
 

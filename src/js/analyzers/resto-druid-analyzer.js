@@ -41,6 +41,7 @@ class RestoDruidSubAnalyzer {
 		this.druidHeals.set(189853 , "Dreamwalker");
 		this.druidHeals.set(189800 , "Nature's Essence");
 		this.druidHeals.set(33778, "Lifebloom Bloom");
+		this.druidHeals.set(253432, "Dreamer (T21)");
 		// Ysera's Gift and Renewal don't benefit from Mastery,
 		// presumably because they already scale with your max health.
 		
@@ -55,6 +56,7 @@ class RestoDruidSubAnalyzer {
 		this.hots.set(102352, "Cenarion Ward");
 		this.hots.set(33763, "Lifebloom");
 		this.hots.set(22842, "Frenzied Regeneration"); // yes, it actually counts towards mastery -_-
+		this.hots.set(253432, "Dreamer (T21)");
 		
 		this.masteryBuffs = new Map(); // map from buff ID to obj with buff name and buff strength
 		this.masteryBuffs.set(232378, {'amount':4000, 'name':'T19 2pc'});

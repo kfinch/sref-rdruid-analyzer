@@ -1,0 +1,20 @@
+
+/* Extra styling to add arrows indicating collapse status to collapsible elements */
+[data-toggle="collapse"][aria-expanded="true"] .panel-title:after {
+    font-family: 'Glyphicons Halflings';  /* using Bootstrap Glyphicons */
+    content: "\e114";    /* down arrow glyph */
+    float: right;
+    color: grey;
+}
+[data-toggle="collapse"][aria-expanded="false"] .panel-title:after {
+	font-family: 'Glyphicons Halflings';  /* using Bootstrap Glyphicons */
+    content: "\e080";    /* right arrow glyph */
+	float: right;
+    color: grey;
+}
+
+/* iOS / Safari won't recognize these as clickable unless 'cursor: pointer' added */
+[data-toggle="collapse"] {
+	cursor: pointer;
+}
+
