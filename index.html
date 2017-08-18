@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Sref's WCL Analyzer</title>
+  <title>Gao + Sref's WCL Analyzer</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -16,6 +16,7 @@
   <script src="src/js/parser.js"></script>
   <script src="src/js/analyzers/resto-druid-analyzer.js"></script>
   <script src="src/js/analyzers/feral-druid-analyzer.js"></script>
+  <script src="src/js/analyzers/resto-shaman-analyzer.js"></script>
   <script src="src/js/main.js"></script>
 </head>
 <body>
@@ -23,25 +24,28 @@
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Sref's WCL Analyzer</a>
+      <a class="navbar-brand" href="#">Gao + Sref's WCL Analyzer</a>
     </div>
   </div>
 </nav>
-  
+
+
 <div class="container">
   <div class="row">
-  
+
 	<div class="col-sm-8" id="app-container"></div>
-    
+
     <div class="col-sm-4">
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab button" data-toggle="collapse" data-parent="" id="usageHeader" href="#usageCollapse" aria-expanded="true" aria-controls="usageCollapse">
+        <div class="panel-heading" role="tab" id="headingOne">
           <h4 class="panel-title">
-			Usage
+            <a role="button" data-toggle="collapse" data-parent="" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Usage
+            </a>
           </h4>
         </div>
-        <div id="usageCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="usageHeader">
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
           <div class="panel-body">
             <p>Find a <a href="https://www.warcraftlogs.com/">WarcraftLogs</a> report you'd like to analyze, copy the URL (or just the report code) into the input box, and press the 'Get' button.</p>
             <p>Select the specific fight you'd like to analyze, and press the 'Analyze' button. Analysis may take up to a minute to complete.</p>
@@ -49,12 +53,31 @@
         </div>
       </div>
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab button" id="restoDruidHeader" data-toggle="collapse" data-parent="" href="#restoDruidCollapse" aria-expanded="false" aria-controls="restoDruidCollapse">
+        <div class="panel-heading" role="tab" id="headingTwo">
           <h4 class="panel-title">
-              Resto Druid Analysis
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Resto Shaman Analysis
+            </a>
           </h4>
         </div>
-        <div id="restoDruidCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="restoDruidHeader">
+        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            <p><u>Average Mastery Healing</u></p>
+            <p>Calculates the raw healing that is done due to your mastery. It then shows this as a % of your total healing.</p>
+            <p><u>Spell Mastery Contributions</u></p>
+            <p>This gives the direct and mastery amounts and % (of total healing) of your healing on a per spell breakdown. It also publishes the average health of targets healed by that spell.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingThree">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Resto Druid Analysis
+            </a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
           <div class="panel-body">
             <p><u>Average Mastery Stacks</u></p>
             <p>Calculates the average number of mastery stacks you benefit from when healing. This average is weighted with respect to healing done (before mastery).</p>
@@ -71,66 +94,81 @@
         </div>
       </div>
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab button" id="feralDruidHeader" data-toggle="collapse" data-parent="" href="#feralDruidCollapse" aria-expanded="false" aria-controls="feralDruidCollapse">
+        <div class="panel-heading" role="tab" id="headingFour">
           <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
             Feral Druid Analysis
+
+            </a>
           </h4>
         </div>
-        <div id="feralDruidCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="feralDruidHeader">
+        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
           <div class="panel-body">
               <p><u>Expected AB Uptime</u></p>
               <p>Uses your actual ability cast times / targets to calculate your <i>expected</i> <a href="http://www.wowhead.com/spell=210705/ashamanes-rip">Ashamane's Rip</a> uptime. Expected uptime is contrasted with actual uptime from logs. Results are presented for every enemy target you used Rip on. All uptimes are a percentage of the total fight time.</p>
               <p>The Ashamane's Bite artifact talent can be frustrating because while skill definitely contributes to uptime, the largest factor in an individual fight is pure luck. This analyzer seeks to remove luck from the equation when analyzing logs by letting you see your expected uptime based only on your ability timings.</p>
               <p>This analyzer should also allow you to rage at your poor proc luck, something which would no doubt otherwise be in short supply.</p>
+
               <p><b>SHORTCOMINGS: This analyzer is still <i>experimental</i>, and the code is a mess and needs to be refactored. Calculated Rip uptimes are very slightly off from the WCL reported values and I'm not sure why. Simulated Thrash / Swipe / BrS can proc AB on multiple targets while this can't actually happen in practice. Swiping multiple targets with Rip is uncommon enough that this shouldn't make a noticable difference in sim.</b></p>
 			  <p><b>Simulator currently assumes you have t19-2pc, which is an ok assumption but it will need to be updated to check in the future. Simulator currently assumes you don't have t20-4pc, which is a bad assumption. Also needs to be updated.</b></p>
           </div>
         </div>
       </div>
       <div class="panel panel-default">
-        <div class="panel-heading" role="tab button" id="changelogHeader" data-toggle="collapse" data-parent="" href="#changelogCollapse" aria-expanded="false" aria-controls="changelogCollapse">
+        <div class="panel-heading" role="tab" id="headingFive">
           <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
             Changelog
+            </a>
           </h4>
         </div>
-        <div id="changelogCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="changelogHeader">
+        <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
           <div class="panel-body">
-			  <h5>8/1/2017</h5>
+              <h5>8/1/2017</h5>
               <ul>
-				<li>Added preliminary support for the <a href="http://ptr.wowhead.com/spell=253432/dreamer">T21 2pc HoT</a></li>
-              </ul>
+                    <li>Added preliminary support for the <a href="http://ptr.wowhead.com/spell=253432/dreamer">T21 2pc HoT</a></li>
+                  </ul>
+              <h5>05/22/2017</h5>
+              <ul>
+                    <li>Gao: Resto Shaman Analyzer added.</li>
+                  </ul>
               <h5>4/28/2017</h5>
               <ul>
-				<li>Added Feral Analyzer</li>
-              </ul>
+                    <li>Added Feral Analyzer</li>
+                  </ul>
               <h5>4/24/2017</h5>
               <ul>
-				<li>Added entries for healing attributable to the T19 2pc and to Jacin's Ruse</li>
-              </ul>
+                    <li>Added entries for healing attributable to the T19 2 piece and to Jacin's Ruse</li>
+                  </ul>
               <h5>4/22/2017</h5>
               <ul>
-                <li>Added raw healing numbers and avg mastery stacks, improved data presentation.</li>
-              </ul>
+                    <li>Added raw healing numbers and avg mastery stacks, improved data presentation.</li>
+                  </ul>
               <h5>4/21/2017</h5>
               <ul>
-                <li>Initial Release</li>
-              </ul>
-            </div>
-        </div>
+                    <li>Initial Release</li>
+                  </ul>
+              </div>
+          </div>
         </div>
         <div class="panel panel-default">
-          <div class="panel-heading" role="tab button" id="infoHeader" data-toggle="collapse" data-parent="" href="#infoCollapse" aria-expanded="false" aria-controls="infoCollapse">
+          <div class="panel-heading" role="tab" id="headingSix">
             <h4 class="panel-title">
-              Information
+              <a class="collapsed" role="button" data-toggle="collapse" data-parent="" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+              Contact
+              </a>
             </h4>
           </div>
-          <div id="infoCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="infoHeader">
+          <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
             <div class="panel-body">
               <p>UI Layout inspired by the <a href="https://druid-legendary-analyser.herokuapp.com/#">Restoration Druid Legendary Analyser</a>, which is another great WCL analysis tool for Resto Druids.
-               <p>Source available <a href="https://github.com/kfinch/sref-rdruid-analyzer">here</a>, and you can contact me with questions or suggestions on Discord : Sref#3865</p>
+              <p>Code built off of Sref's awesome analyzer. Resto shaman analyzer built by Gao.
+              <p>Source available <a href="https://github.com/awlego/gao-sref-wcl-analyzer">here</a>, and you can contact me with questions or suggestions on Discord : Gao#7513 and Sref#3865</p>
             </div>
           </div>
         </div>
+      </div>
+    </div>
     </div>
 	  </div>
   </div>
